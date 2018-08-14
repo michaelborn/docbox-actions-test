@@ -1,7 +1,8 @@
 [![All Contributors](https://img.shields.io/badge/all_contributors-2-orange.svg?style=flat-square)](#contributors)
 
-[![Master Branch Build Status](https://img.shields.io/https://travis-ci.org/Ortus-Solutions/DocBox/master.svg?style=flat-square&label=master)](https://travis-ci.org/ortus-solutions/docbox)
-[![Development Branch Build Status](https://img.shields.io/https://travis-ci.org/Ortus-Solutions/DocBox/development.svg?style=flat-square&label=development)](https://travis-ci.org/ortus-solutions/docbox)
+[![Master Branch Build Status](https://img.shields.io/https://travis-ci.org/Ortus-Solutions/DocBox/master.svg?style=flat-square&label=master)](https://travis-ci.org/Ortus-Solutions/DocBox) 
+| 
+[![Development Branch Build Status](https://img.shields.io/https://travis-ci.org/Ortus-Solutions/DocBox/development.svg?style=flat-square&label=development)](https://travis-ci.org/Ortus-Solutions/DocBox)
 
 ```
 ██████╗  ██████╗  ██████╗██████╗  ██████╗ ██╗  ██╗
