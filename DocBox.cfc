@@ -103,7 +103,9 @@ component accessors="true"{
 			// iterate over files found
 			for( var thisFile in aFiles ){
 				// Excludes?
-				if( len( arguments.excludes ) && rEFindNoCase( arguments.excludes, thisFile ) ){
+				// Use relative file path so placement on disk doesn't affect the regex check
+				var relativeFilePath = replace( thisFile, thisInput.dir, "" );
+				if( len( arguments.excludes ) && rEFindNoCase( arguments.excludes, relativeFilePath ) ){
 					continue;
 				}
 				// get current path
