@@ -9,3 +9,4 @@ artifacts/*
 build-docbox/*
 tests/DocBox-APIDocs
 .vscode
+testbox
