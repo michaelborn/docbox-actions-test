@@ -78,7 +78,7 @@ Once the generation finalizes, you will see your beautiful docs!
   * `outputFile` : The output file
 
 ### CommandBox Command
-There is a related project you can install which wraps up the DocBox libraray in a Custom CLI command so you can generate API docs from the command line.
+There is a related project you can install which wraps up the DocBox library in a Custom CLI command so you can generate API docs from the command line.
 ```bash
 box install commandbox-docbox
 ```
@@ -103,4 +103,4 @@ I THANK GOD FOR HIS WISDOM FOR THIS PROJECT
 
 ## Have Questions?
 
-Come find us on the [CFML Slack]() (#box-products channel) and ask us there.  We'd be happy to help!
+Come find us on the [CFML Slack](http://cfml-slack.herokuapp.com/) (#box-products channel) and ask us there.  We'd be happy to help!
