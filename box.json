@@ -36,6 +36,6 @@
         "run.cfm"
     ],
     "testbox":{
-        "runner":"http://localhost:64492/tests/run.cfm"
+        "runner":"http://localhost:64492/tests/runner.cfm"
     }
 }
