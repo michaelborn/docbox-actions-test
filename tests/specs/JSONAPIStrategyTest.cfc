@@ -3,7 +3,7 @@
 */
 component extends="testbox.system.BaseSpec"{
 
-	property name="testOutputDir" default="/tests/resources/tmp";
+	property name="testOutputDir" default="/tests/resources/tmp/json";
 
 /*********************************** LIFE CYCLE Methods ***********************************/
 
@@ -25,24 +25,30 @@ component extends="testbox.system.BaseSpec"{
 
 /*********************************** BDD SUITES ***********************************/
 
-	function run( testResults, testBox, foo = "yellow" ) testRole="Administrator"{
+	function run(){
 		// all your suites go here.
 		describe( "JSONAPIStrategy", function(){
 
+			beforeEach( function() {
+				// empty the directory so we know if it has been populated
+				if ( directoryExists( variables.testOutputDir ) ){
+					directoryDelete( variables.testOutputDir, true );
+				}
+				directoryCreate( variables.testOutputDir );
+			});
+
 			it( "can run without failure", function(){
-				variables.docbox.generate(
-					source = expandPath( "/tests" ),
-					mapping = "tests",
-					excludes="(coldbox|build\-docbox)"
-				);
+				expect( function() {
+					variables.docbox.generate(
+						source = expandPath( "/tests" ),
+						mapping = "tests",
+						excludes="(coldbox|build\-docbox)"
+					)
+				}
+				).notToThrow();
 			});
 
 			it( "produces JSON output in the correct directory", function() {
-				// empty the directory so we know if it has been populated
-				directoryDelete( variables.testOutputDir, true );
-				directoryCreate( variables.testOutputDir );
-
-
 				variables.docbox.generate(
 					source = expandPath( "/tests" ),
 					mapping = "tests",
