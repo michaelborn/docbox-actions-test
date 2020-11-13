@@ -85,18 +85,9 @@ component extends="docbox.strategy.AbstractTemplateStrategy" accessors="true"{
 	}
 
 	package array function normalize( required array classData ){
-		var componentMeta = [ "hint", "extends", "functions", "fullname", "properties", "remoteAddress", "type", "hashCode", "name", "path" ];
-		var functionMeta = [ "name", "hint", "description", "access", "closure", "owner", "position", "returnFormat", "returnType", "modifier", "parameters" ];
 		return arguments.classData.map( function( row ) {
 			/**
-			 * Marshall component metadata into attributes array.
-			 */
-			var metaAttributes = row.metadata.filter( ( key ) => {
-				return !arrayContainsNoCase( componentMeta, key );
-			});
-			/**
 			 * Marshall functions to match the designed schema;
-			 * including generating an "attributes" array of attributes not described elsewhere on the function.
 			 */
 			var metaFunctions = row.metadata.functions.map( ( method ) => {
 				return {
@@ -107,10 +98,7 @@ component extends="docbox.strategy.AbstractTemplateStrategy" accessors="true"{
 					"hint" : method.keyExists( "hint" ) ? method.hint : "",
 					"description" : method.keyExists( "description" ) ? method.description : "",
 					"access" : method.access,
-					"position" : method.position,
-					"attributes" : method.filter( ( key ) => {
-						return !arrayContainsNoCase( functionMeta, key );
-					})
+					"position" : method.position
 				}
 			} );
 			return {
@@ -120,7 +108,6 @@ component extends="docbox.strategy.AbstractTemplateStrategy" accessors="true"{
 				"extends" : row.extends,
 				"fullextends" : row.fullextends,
 				"hint" : row.metadata.hint,
-				"attributes" : metaAttributes,
 				"functions" : metaFunctions
 			};
 		});
