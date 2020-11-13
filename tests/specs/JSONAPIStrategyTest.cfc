@@ -68,6 +68,21 @@ component extends="testbox.system.BaseSpec"{
 
 			});
 
+			it( "Produces the correct hierarchy of class documentation files", function() {
+				variables.docbox.generate(
+					source = expandPath( "/tests" ),
+					mapping = "tests",
+					excludes="(coldbox|build\-docbox)"
+				);
+
+				expect( directoryExists( variables.testOutputDir & "/classes/tests/specs/JSONAPIStrategyTest.json" ) )
+					.toBeTrue( "should generate documentation in nested hierarchy according to source .cfc file" );
+
+				expect( directoryExists( variables.testOutputDir & "/classes/tests/specs/HTMLAPIStrategyTest.json" ) )
+					.toBeTrue( "should generate documentation in nested hierarchy according to source .cfc file" );
+
+			});
+
 		});
 	}
 
