@@ -9,27 +9,49 @@ component accessors="true"{
 	/**
 	* The strategy to use for document generation. Must extend docbox.strategy.AbstractTemplateStrategy
 	*/
-	property name="strategy" doc_generic="docbox.strategy.AbstractTemplateStrategy";
+	property name="strategies" type="array" doc_generic="docbox.strategy.AbstractTemplateStrategy";
 
 	/**
 	* Constructor
-
-	* @strategy The optional strategy to generate the documentation with. This can be a class path or an instance of the strategy. If none is passed then
-	* we create the default strategy of 'docbox.strategy.api.HTMLAPIStrategy'
-	* @properties The struct of properties to instantiate the strategy with.
 	*/
 	DocBox function init(
-		any strategy ="docbox.strategy.api.HTMLAPIStrategy",
+		any strategy ="",
 		struct properties={}
 	){
+		variables.strategies = [];
+		if ( arguments.strategy != "" ){
+			addStrategy( 
+				strategy = arguments.strategy,
+				properties = arguments.properties
+			);
+		}
+		return this;
+	}
+
+	/**
+	 * Backwards-compatible setter to add a strategy to the docbox configuration.
+	 * @see addStrategy
+	 */
+	DocBox function setStrategy(){
+		return addStrategy( argumentCollection = arguments );
+	}
+
+	/**
+	 * Add a documentation strategy for output format.
+	 * 
+	 * @strategy The optional strategy to generate the documentation with. This can be a class path or an instance of the  strategy. If none is passed then
+	 * we create the default strategy of 'docbox.strategy.api.HTMLAPIStrategy'
+	 * @properties The struct of properties to instantiate the strategy with.
+	 */
+	DocBox function addStrategy( any strategy ="docbox.strategy.api.HTMLAPIStrategy", struct properties = {} ){
+		var newStrategy;
 		// if instance?
 		if( isObject( arguments.strategy ) ){
-			variables.strategy = arguments.strategy;
+			newStrategy = arguments.strategy;
 		} else {
-			// Create it
-			variables.strategy = new "#arguments.strategy#"( argumentCollection=arguments.properties );
+			newStrategy = new "#arguments.strategy#"( argumentCollection=arguments.properties );
 		}
-
+		setStrategies( getStrategies().append( newStrategy ) );
 		return this;
 	}
 
@@ -48,12 +70,12 @@ component accessors="true"{
 		string mapping="",
 		string excludes=""
 	){
-		// verify we have a strategy
-		if( isNull( variables.strategy ) ){
+		// verify we have at least one strategy defined
+		if( isNull( getStrategies() ) || !getStrategies().len() ){
 			throw(
 				type 	= "StrategyNotSetException",
 				message = "No Template Strategy has been set.",
-				detail 	= "Create a Template Strategy, and set it with setStrategy() before calling generate() or pass it via the constructor."
+				detail 	= "Please call docbox.withStrategy( strategy, properties ) before running generate()."
 			);
 		}
 
@@ -68,8 +90,9 @@ component accessors="true"{
 		// build metadata collection
 		var qMetaData = buildMetaDataCollection( thisSource, arguments.excludes );
 
-		// run the strategy
-		variables.strategy.run( qMetaData );
+		getStrategies().each( function( strategy ) {
+			strategy.run( qMetaData );
+		});
 
 		return this;
 	}
