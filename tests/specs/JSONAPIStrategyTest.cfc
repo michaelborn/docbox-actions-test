@@ -83,6 +83,26 @@ component extends="testbox.system.BaseSpec"{
 
 			});
 
+			it( "produces package-summary.json file for each 'package' level", function() {
+				variables.docbox.generate(
+					source = expandPath( "/tests" ),
+					mapping = "tests",
+					excludes="(coldbox|build\-docbox)"
+				);
+
+				var results = directoryList( variables.testOutputDir, true, "name" );
+				debug( results );
+				expect( results.len() ).toBeGT( 0 );
+
+				expect( directoryExists( variables.testOutputDir & "/classes/tests/specs/index.json" ) )
+					.toBeTrue( "should generate package summary file" );
+
+				var packageSummary = fileRead( variables.testOutputDir & "/classes/tests/specs/index.json" );
+
+				expect( deSerializeJSON( packageSummary ) ).toBeTypeOf( "struct" );
+
+			});
+
 		});
 	}
 
