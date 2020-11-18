@@ -1,18 +1,18 @@
 /**
-* Default Document Strategy for DocBox
-* <br>
-* <small><em>Copyright 2015 Ortus Solutions, Corp <a href="www.ortussolutions.com">www.ortussolutions.com</a></em></small>
-*/
+ * JSON API Strategy for DocBox
+ * <br>
+ * <small><em>Copyright 2015 Ortus Solutions, Corp <a href="www.ortussolutions.com">www.ortussolutions.com</a></em></small>
+ */
 component extends="docbox.strategy.AbstractTemplateStrategy" accessors="true"{
 
 	/**
-	* The output directory
-	*/
+	 * The output directory
+	 */
 	property name="outputDir" type="string";
 
 	/**
-	* The project title to use
-	*/
+	 * The project title to use
+	 */
 	property name="projectTitle" default="Untitled" type="string";
 
 	// Static variables.
@@ -20,10 +20,11 @@ component extends="docbox.strategy.AbstractTemplateStrategy" accessors="true"{
 	variables.static.ASSETS_PATH 	= "/docbox/strategy/json/resources/static";
 
 	/**
-	* Constructor
-	* @outputDir The output directory
-	* @projectTitle The title used in the HTML output
-	*/
+	 * Constructor
+	 * 
+	 * @outputDir The output directory
+	 * @projectTitle The title used in the HTML output
+	 */
 	component function init( required outputDir, string projectTitle="Untitled" ){
 		super.init();
 
@@ -34,26 +35,31 @@ component extends="docbox.strategy.AbstractTemplateStrategy" accessors="true"{
 	}
 
 	/**
-	* Run this strategy
-	* @qMetaData The metadata
-	*/
-	component function run( required query qMetadata ){
+	 * Generate JSON documentation
+	 * 
+	 * @metadata All component metadata, sourced from DocBox.
+	 */
+	component function run( required query metadata ){
 		ensureDirectory( getOutputDir() );
 		ensureDirectory( getOutputDir() & "/classes" );
 
-		//write the index template
+		// write the index template
 		var args = {
 			path 		 = getOutputDir() & "/index.json", 
 			template 	 = "#variables.static.TEMPLATE_PATH#/index.cfm", 
 			projectTitle = getProjectTitle()
 		};
 
-		// consider chainable methods, since that's how HTMLAPIStrategy works.
-		var classData = normalize( queryToArray( arguments.qMetadata ) );
+		var classData = normalizePackages(
+			arguments.metadata.reduce( ( results, row ) => {
+				results.append( row );
+				return results;
+			}, [])
+		);
 
 		serializeToFile(
 			getOutputDir() & "/index.json",
-			generateClassIndex( classData )
+			generateIndexSchema( classData )
 		);
 
 		classData.each( ( class ) => {
@@ -67,12 +73,12 @@ component extends="docbox.strategy.AbstractTemplateStrategy" accessors="true"{
 	}
 
 	/**
-	 * Marshall component metadata into a class index file.
+	 * Marshall component names and paths into an index.json file
 	 * This will be spit into an `index.json` file at the root of the output directory.
 	 *
-	 * @classData 
+	 * @classData Component metadata sourced from DocBox
 	 */
-	package struct function generateClassIndex( required array classData ){
+	package struct function generateIndexSchema( required array classData ){
 		var classMap = arguments.classData.map( ( class ) => {
 			return {
 				"name" : class.name,
@@ -84,7 +90,12 @@ component extends="docbox.strategy.AbstractTemplateStrategy" accessors="true"{
 		}
 	}
 
-	package array function normalize( required array classData ){
+	/**
+	 * Normalize component metadata into a serializable package-component data format.
+	 *
+	 * @classData Component metadata, courtesy of DocBox
+	 */
+	package array function normalizePackages( required array classData ){
 		return arguments.classData.map( function( row ) {
 			/**
 			 * Marshall functions to match the designed schema;
@@ -111,20 +122,6 @@ component extends="docbox.strategy.AbstractTemplateStrategy" accessors="true"{
 				"functions" : metaFunctions
 			};
 		});
-	}
-
-
-	/**
-	 * Convert a query object to an array of structs.
-	 *
-	 * @data source query object
-	 */
-	private array function queryToArray( required query data ){
-		var converted = [];
-		for( var i = 1; i <= arguments.data.recordCount; i++ ){
-			converted.append( queryGetRow( arguments.data, i ) );
-		}
-		return converted;
 	}
 
 	/**
