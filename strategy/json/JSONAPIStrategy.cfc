@@ -100,26 +100,28 @@ component extends="docbox.strategy.AbstractTemplateStrategy" accessors="true"{
 			/**
 			 * Marshall functions to match the designed schema;
 			 */
-			var metaFunctions = row.metadata.functions.map( ( method ) => {
-				return {
-					"returnType" : method.returnType,
-					"returnFormat" : method.returnFormat,
-					"parameters" : method.parameters,
-					"name" : method.name,
-					"hint" : method.keyExists( "hint" ) ? method.hint : "",
-					"description" : method.keyExists( "description" ) ? method.description : "",
-					"access" : method.access,
-					"position" : method.position
-				}
-			} );
+			if ( !isNull( row.metadata.functions ) ){
+				var metaFunctions = row.metadata.functions.map( ( method ) => {
+					return {
+						"returnType" : method.returnType,
+						"returnFormat" : method.returnFormat,
+						"parameters" : method.parameters,
+						"name" : method.name,
+						"hint" : method.keyExists( "hint" ) ? method.hint : "",
+						"description" : method.keyExists( "description" ) ? method.description : "",
+						"access" : method.access,
+						"position" : method.position
+					}
+				} );
+			}
 			return {
 				"name" : row.name,
 				"package" : row.package,
 				"type" : row.type,
-				"extends" : row.extends,
-				"fullextends" : row.fullextends,
-				"hint" : row.metadata.hint,
-				"functions" : metaFunctions
+				"extends" : structKeyExists( row.metadata, "extends" ) ? row.extends : "",
+				"fullextends" : structKeyExists( row.metadata, "fullextends" ) ? row.fullextends : "",
+				"hint" : structKeyExists( row.metadata, "hint" ) ? row.metadata.hint : "",
+				"functions" : structKeyExists( row.metadata, "functions" ) ? metaFunctions : []
 			};
 		});
 	}
