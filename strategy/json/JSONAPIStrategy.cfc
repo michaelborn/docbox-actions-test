@@ -56,15 +56,6 @@ component extends="docbox.strategy.AbstractTemplateStrategy" accessors="true"{
 			}, [])
 		);
 
-
-		/**
-		 * Generate top-level JSON package index
-		 */
-		serializeToFile(
-			getOutputDir() & "/overview-summary.json",
-			buildPackageSummary( classes )
-		);
-
 		/**
 		 * Generate hierarchical JSON package indices with classes
 		 */
@@ -75,6 +66,14 @@ component extends="docbox.strategy.AbstractTemplateStrategy" accessors="true"{
 			results[ class.package ].append( class );
 			return results;
 		}, {});
+
+		/**
+		 * Generate top-level JSON package index
+		 */
+		serializeToFile(
+			getOutputDir() & "/overview-summary.json",
+			buildOverviewSummary( classes, packages )
+		);
 
 		/**
 		 * Output a hierarchical folder structure which matches the original package structure -
@@ -102,6 +101,23 @@ component extends="docbox.strategy.AbstractTemplateStrategy" accessors="true"{
 		});
 
 		return this;
+	}
+
+	/**
+	 * Marshall component names and paths into a package-summary.json file for each package hierarchy level
+	 *
+	 * @classData Component metadata sourced from DocBox
+	 * @packages Array of packages for linking to package summary files
+	 */
+	package struct function buildOverviewSummary( required array classData, required struct packages ){
+		var summary = buildPackageSummary( arguments.classData );
+		summary[ "packages" ] = arguments.packages.map( ( package ) => {
+			return {
+				"name" : package,
+				"path" : "#replace( package , ".", "/", "all" )#/package-summary.json"
+			}
+		});
+		return summary;
 	}
 
 	/**
