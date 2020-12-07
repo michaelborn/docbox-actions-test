@@ -41,7 +41,6 @@ component extends="docbox.strategy.AbstractTemplateStrategy" accessors="true"{
 	 */
 	component function run( required query metadata ){
 		ensureDirectory( getOutputDir() );
-		ensureDirectory( getOutputDir() & "/classes" );
 
 		// write the index template
 		var args = {
@@ -50,22 +49,55 @@ component extends="docbox.strategy.AbstractTemplateStrategy" accessors="true"{
 			projectTitle = getProjectTitle()
 		};
 
-		var classData = normalizePackages(
+		var classes = normalizePackages(
 			arguments.metadata.reduce( ( results, row ) => {
 				results.append( row );
 				return results;
 			}, [])
 		);
 
+
+		/**
+		 * Generate top-level JSON package index
+		 */
 		serializeToFile(
-			getOutputDir() & "/index.json",
-			generateIndexSchema( classData )
+			getOutputDir() & "/overview-summary.json",
+			buildPackageSummary( classes )
 		);
 
-		classData.each( ( class ) => {
+		/**
+		 * Generate hierarchical JSON package indices with classes
+		 */
+		var packages = classes.reduce( function( results, class ) {
+			if ( !results.keyExists( class.package ) ){
+				results[ class.package ] = [];
+			}
+			results[ class.package ].append( class );
+			return results;
+		}, {});
+
+		/**
+		 * Output a hierarchical folder structure which matches the original package structure -
+		 * Including an index.json file for each package level.
+		 */
+		packages.each( ( package, classes ) => {
+			var path = getOutputDir() & "/" & replace( package, ".", "/", "all" );
+			if ( !directoryExists( path ) ){
+				directoryCreate( path );
+			}
+			classes.each( ( class ) => {
+				serializeToFile(
+					"#path#/#class.name#.json",
+					class
+				);
+			});
+
+			/**
+			 * Generate JSON package index for this package level
+			 */
 			serializeToFile(
-				getOutputDir() & "/classes/#class.name#.json",
-				class
+				path & "/package-summary.json",
+				buildPackageSummary( classes )
 			);
 		});
 
@@ -73,21 +105,19 @@ component extends="docbox.strategy.AbstractTemplateStrategy" accessors="true"{
 	}
 
 	/**
-	 * Marshall component names and paths into an index.json file
-	 * This will be spit into an `index.json` file at the root of the output directory.
+	 * Marshall component names and paths into a package-summary.json file for each package hierarchy level
 	 *
 	 * @classData Component metadata sourced from DocBox
 	 */
-	package struct function generateIndexSchema( required array classData ){
-		var classMap = arguments.classData.map( ( class ) => {
-			return {
-				"name" : class.name,
-				"path" : "#getOutputDir()#/classes/#class.name#.json"
-			}
-		});
+	package struct function buildPackageSummary( required array classData ){
 		return {
-			"packages" : classMap
-		}
+			"classes" : arguments.classData.map( ( class ) => {
+				return {
+					"name" : class.name,
+					"path" : "#replace( class.package , ".", "/", "all" )#/#class.name#.json"
+				}
+			})
+		};
 	}
 
 	/**
@@ -124,6 +154,16 @@ component extends="docbox.strategy.AbstractTemplateStrategy" accessors="true"{
 				"functions" : structKeyExists( row.metadata, "functions" ) ? metaFunctions : []
 			};
 		});
+	}
+
+	package struct function reducePackages( classData ){
+		return classData.reduce( function( result, class ) {
+			if ( !classData.keyExists( class.package ) ){
+				result[ class.package ] = [];
+			}
+			arrayAppend( result[ class.package ], class );
+			return result;
+		}, {});
 	}
 
 	/**

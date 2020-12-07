@@ -59,12 +59,10 @@ component extends="testbox.system.BaseSpec"{
 				debug( results );
 				expect( results.len() ).toBeGT( 0 );
 
-				expect( arrayContainsNoCase( results, "index.json" ) )
+				expect( arrayContainsNoCase( results, "overview-summary.json" ) )
 					.toBeTrue( "should generate index.json class index file" );
-				expect( arrayContainsNoCase( results, "classes" ) )
-					.toBeTrue( "should generate classes/ directory for class documentation");
 				expect( arrayContainsNoCase( results, "JSONAPIStrategyTest.json" ) )
-					.toBeTrue( "should generate classes/JSONAPIStrategyTest.json to document JSONAPIStrategyTest.cfc")
+					.toBeTrue( "should generate JSONAPIStrategyTest.json to document JSONAPIStrategyTest.cfc")
 
 			});
 
@@ -74,12 +72,14 @@ component extends="testbox.system.BaseSpec"{
 					mapping = "tests",
 					excludes="(coldbox|build\-docbox)"
 				);
+				expect( directoryExists( variables.testOutputDir & "/tests/specs" ) )
+					.toBeTrue( "should generate tests/specs directory for output" );
 
-				expect( directoryExists( variables.testOutputDir & "/classes/tests/specs/JSONAPIStrategyTest.json" ) )
-					.toBeTrue( "should generate documentation in nested hierarchy according to source .cfc file" );
+				expect( fileExists( variables.testOutputDir & "/tests/specs/JSONAPIStrategyTest.json" ) )
+					.toBeTrue( "should generate JSONAPIStrategyTest.json documentation file" );
 
-				expect( directoryExists( variables.testOutputDir & "/classes/tests/specs/HTMLAPIStrategyTest.json" ) )
-					.toBeTrue( "should generate documentation in nested hierarchy according to source .cfc file" );
+				expect( fileExists( variables.testOutputDir & "/tests/specs/HTMLAPIStrategyTest.json" ) )
+					.toBeTrue( "should generate HTMLAPIStrategyTest.json documentation file" );
 
 			});
 
@@ -90,16 +90,23 @@ component extends="testbox.system.BaseSpec"{
 					excludes="(coldbox|build\-docbox)"
 				);
 
-				var results = directoryList( variables.testOutputDir, true, "name" );
-				debug( results );
-				expect( results.len() ).toBeGT( 0 );
-
-				expect( directoryExists( variables.testOutputDir & "/classes/tests/specs/index.json" ) )
+				expect( fileExists( variables.testOutputDir & "/tests/specs/package-summary.json" ) )
 					.toBeTrue( "should generate package summary file" );
 
-				var packageSummary = fileRead( variables.testOutputDir & "/classes/tests/specs/index.json" );
+				var packageSummary = deSerializeJSON( fileRead( variables.testOutputDir & "/tests/specs/package-summary.json" ) );
 
-				expect( deSerializeJSON( packageSummary ) ).toBeTypeOf( "struct" );
+				expect( packageSummary ).toBeTypeOf( "struct" )
+										.toHaveKey( "classes" );
+
+				expect( packageSummary.classes ).toBeTypeOf( "array" );
+				expect( packageSummary.classes.len() ).toBeGT( 0, "should have a few documented packages" );
+				packageSummary.classes.each( ( class ) => {
+					expect( class ).toBeTypeOf( "struct" )
+									.toHaveKey( "path" )
+									.toHaveKey( "name" );
+					expect( listLast( class.path, "." ) ).toBe( "json" );
+					expect( fileExists( variables.testOutputDir & "/" & class.path ) ).toBeTrue( "should point to existing class documentation file" );
+				});
 
 			});
 
