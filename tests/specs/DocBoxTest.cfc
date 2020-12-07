@@ -100,11 +100,10 @@ component extends="testbox.system.BaseSpec"{
 					.toBeTrue( "should generate allclasses-frame.html file to list all classes"  );
 
 				var results = directoryList( variables.JSONOutputDir, true, "name" );
-				debug( results );
 				expect( results.len() ).toBeGT( 0 );
 
-				expect( arrayContainsNoCase( results, "index.json" ) )
-					.toBeTrue( "should generate index.json class index file" );
+				expect( arrayContainsNoCase( results, "overview-summary.json" ) )
+					.toBeTrue( "should generate overview-summary.json class index file" );
 			});
 
 		});

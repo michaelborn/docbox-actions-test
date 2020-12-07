@@ -56,7 +56,6 @@ component extends="testbox.system.BaseSpec"{
 				);
 
 				var results = directoryList( variables.testOutputDir, true, "name" );
-				debug( results );
 				expect( results.len() ).toBeGT( 0 );
 
 				expect( arrayContainsNoCase( results, "overview-summary.json" ) )
