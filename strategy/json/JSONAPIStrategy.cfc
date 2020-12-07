@@ -167,16 +167,6 @@ component extends="docbox.strategy.AbstractTemplateStrategy" accessors="true"{
 		});
 	}
 
-	package struct function reducePackages( classData ){
-		return classData.reduce( function( result, class ) {
-			if ( !classData.keyExists( class.package ) ){
-				result[ class.package ] = [];
-			}
-			arrayAppend( result[ class.package ], class );
-			return result;
-		}, {});
-	}
-
 	/**
 	 * Serialize the given @data into JSON and write to @path.
 	 *
