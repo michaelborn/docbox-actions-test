@@ -42,13 +42,6 @@ component extends="docbox.strategy.AbstractTemplateStrategy" accessors="true"{
 	component function run( required query metadata ){
 		ensureDirectory( getOutputDir() );
 
-		// write the index template
-		var args = {
-			path 		 = getOutputDir() & "/index.json", 
-			template 	 = "#variables.static.TEMPLATE_PATH#/index.cfm", 
-			projectTitle = getProjectTitle()
-		};
-
 		var classes = normalizePackages(
 			arguments.metadata.reduce( ( results, row ) => {
 				results.append( row );
@@ -110,14 +103,16 @@ component extends="docbox.strategy.AbstractTemplateStrategy" accessors="true"{
 	 * @packages Array of packages for linking to package summary files
 	 */
 	package struct function buildOverviewSummary( required array classData, required struct packages ){
-		var summary = buildPackageSummary( arguments.classData );
-		summary[ "packages" ] = arguments.packages.map( ( package ) => {
-			return {
-				"name" : package,
-				"path" : "#replace( package , ".", "/", "all" )#/package-summary.json"
-			}
-		});
-		return summary;
+		return {
+			"classes" : buildPackageSummary( arguments.classData ).classes,
+			"packages" : arguments.packages.map( ( package ) => {
+				return {
+					"name" : package,
+					"path" : "#replace( package , ".", "/", "all" )#/package-summary.json"
+				}
+			}),
+			"title" : getProjectTitle()
+		};
 	}
 
 	/**
