@@ -5,6 +5,7 @@ component extends="testbox.system.BaseSpec"{
 
 	property name="HTMLOutputDir" default="/tests/resources/tmp/html";
 	property name="JSONOutputDir" default="/tests/resources/tmp/json";
+	property name="XMIOutputFile" default="/tests/resources/tmp/uml/XMITestFile.uml";
 
 /*********************************** LIFE CYCLE Methods ***********************************/
 
@@ -25,6 +26,7 @@ component extends="testbox.system.BaseSpec"{
 			beforeEach( function() {
 				resetTmpDirectory( variables.HTMLOutputDir );
 				resetTmpDirectory( variables.JSONOutputDir );
+				resetTmpDirectory( getDirectoryFromPath( variables.XMIOutputFile ) );
 
 				variables.docbox = new docbox.DocBox();
 			});
@@ -88,6 +90,41 @@ component extends="testbox.system.BaseSpec"{
 					.addStrategy(
 						"docbox.strategy.json.JSONAPIStrategy",
 						{ outputDir 		= variables.JSONOutputDir }
+					)
+					.addStrategy(
+						"docbox.strategy.uml2tools.XMIStrategy",
+						{ outputFile 		= variables.XMIOutputFile }
+					)
+					.generate(
+						source = expandPath( "/tests" ),
+						mapping = "tests",
+						excludes="(coldbox|build\-docbox)"
+					);
+
+				var allClassesFile = variables.HTMLOutputDir & "/allclasses-frame.html";
+				expect( fileExists( allClassesFile ) )
+					.toBeTrue( "should generate allclasses-frame.html file to list all classes"  );
+
+				var results = directoryList( variables.JSONOutputDir, true, "name" );
+				expect( results.len() ).toBeGT( 0 );
+
+				expect( arrayContainsNoCase( results, "overview-summary.json" ) )
+					.toBeTrue( "should generate overview-summary.json class index file" );
+			});
+
+			it( "Supports strategy aliases", function(){
+				variables.docbox
+					.addStrategy(
+						"HTML",
+						{ outputDir 		= variables.HTMLOutputDir }
+					)
+					.addStrategy(
+						"JSON",
+						{ outputDir 		= variables.JSONOutputDir }
+					)
+					.addStrategy(
+						"XMI",
+						{ outputFile 		= variables.XMIOutputFile }
 					)
 					.generate(
 						source = expandPath( "/tests" ),

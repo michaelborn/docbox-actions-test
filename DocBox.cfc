@@ -56,6 +56,21 @@ component accessors="true"{
 		if( isObject( arguments.strategy ) ){
 			newStrategy = arguments.strategy;
 		} else {
+			switch( uCase( arguments.strategy ) ){
+				case "HTML":
+				case "HTMLAPISTRATEGY":
+					arguments.strategy = "docbox.strategy.api.HTMLAPIStrategy";
+				break;
+				case "JSON":
+				case "JSONAPISTRATEGY":
+					arguments.strategy = "docbox.strategy.json.JSONAPIStrategy";
+				break;
+				case "XMI":
+				case "XMISTRATEGY":
+					arguments.strategy = "docbox.strategy.uml2tools.XMIStrategy";
+				default:
+				break;
+			}
 			newStrategy = new "#arguments.strategy#"( argumentCollection=arguments.properties );
 		}
 		setStrategies( getStrategies().append( newStrategy ) );
