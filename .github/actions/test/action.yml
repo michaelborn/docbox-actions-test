@@ -6,7 +6,7 @@ branding:
   color: green
 
 runs:
-  using: "actions/setup-commandbox"
+  using: "composite"
   steps:
     - run: box install testbox
       shell: bash
