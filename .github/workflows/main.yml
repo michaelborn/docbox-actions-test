@@ -11,4 +11,4 @@ jobs:
         uses: elpete/setup-commandbox@v1.0.1
       # this step runs the test.yml github action in the .github/actions dir
       - name: Run tests
-        uses: ./.github/actions/test.yml
+        uses: ./.github/actions/test
