@@ -113,19 +113,11 @@ component extends="testbox.system.BaseSpec"{
 			});
 
 			it( "Supports strategy aliases", function(){
+
 				variables.docbox
-					.addStrategy(
-						"HTML",
-						{ outputDir 		= variables.HTMLOutputDir }
-					)
-					.addStrategy(
-						"JSON",
-						{ outputDir 		= variables.JSONOutputDir }
-					)
-					.addStrategy(
-						"XMI",
-						{ outputFile 		= variables.XMIOutputFile }
-					)
+					.addStrategy( "HTML", { outputDir 		= variables.HTMLOutputDir } )
+					.addStrategy( "JSON", { outputDir 		= variables.JSONOutputDir } )
+					.addStrategy( "XMI", { outputFile 		= variables.XMIOutputFile } )
 					.generate(
 						source = expandPath( "/tests" ),
 						mapping = "tests",
