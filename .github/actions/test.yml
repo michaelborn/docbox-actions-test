@@ -1,0 +1,16 @@
+name: 'Test DocBox'
+description: 'Runs our DocBox tests'
+
+branding:
+  icon: check-square
+  color: green
+
+runs:
+  using: "actions/setup-commandbox"
+  steps:
+    - run: box install testbox
+      shell: bash
+    - run: box start
+      shell: bash
+    - run: box testbox run
+      shell: bash
