@@ -8,7 +8,7 @@ jobs:
       - uses: actions/checkout@v2
       # This step installs Commandbox
       - name: Setup CommandBox
-        uses: actions/setup-commandbox
+        uses: elpete/setup-commandbox@v1.0.1
       # this step runs the test.yml github action in the .github/actions dir
       - name: Run tests
         uses: ./
