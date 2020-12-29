@@ -65,6 +65,7 @@ component accessors="true"{
 				case "JSONAPISTRATEGY":
 					arguments.strategy = "docbox.strategy.json.JSONAPIStrategy";
 				break;
+				case "UML":
 				case "XMI":
 				case "XMISTRATEGY":
 					arguments.strategy = "docbox.strategy.uml2tools.XMIStrategy";
