@@ -9,8 +9,5 @@ runs:
   using: "composite"
   steps:
     - run: box install testbox
-      shell: bash
     - run: box start
-      shell: bash
     - run: box testbox run
-      shell: bash
