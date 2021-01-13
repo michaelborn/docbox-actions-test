@@ -151,7 +151,7 @@ component extends="docbox.strategy.AbstractTemplateStrategy" accessors="true"{
 						"hint" : method.keyExists( "hint" ) ? method.hint : "",
 						"description" : method.keyExists( "description" ) ? method.description : "",
 						"access" : method.access,
-						"position" : method.position
+						"position" : method.keyExists( "position" ) ? method.position : { "start":0,"end":0 }
 					}
 				} );
 			}
