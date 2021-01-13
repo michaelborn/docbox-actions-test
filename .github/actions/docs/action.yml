@@ -29,4 +29,6 @@ runs:
   using: "composite"
   steps:
     - run: box install commandbox-docbox --save=false
+      shell: bash
     - run: box docbox generate source=${{ inputs.source }} mappings:docbox=docbox  excludes=${{ inputs.excludes }} strategy-outputDir=${{ inputs.outputDir }} strategy-projectTitle=${{ inputs.projectTitle }}
+      shell: bash
