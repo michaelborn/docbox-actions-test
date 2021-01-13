@@ -1,0 +1,32 @@
+name: 'Document DocBox'
+description: 'Documents DocBox using DocBox'
+
+branding:
+  icon: edit
+  color: yellow
+
+inputs:
+#   mappings:
+#     description: DocBox mapping which points the CFML engine to your application code
+#     required: true
+  projectTitle:
+    description: Project title used in generated documentation
+    required: true
+  source:
+    description: Point DocBox to your application code
+    required: false
+    default: ./
+  outputDir:
+    description: Directory where the results are output
+    required: false
+    default: .tmp/apidocs
+  excludes:
+    description: Exclude directories from being parsed and documented.
+    required: false
+    default: tests|coldbox|testbox|modules
+
+runs:
+  using: "composite"
+  steps:
+    - run: box install commandbox-docbox --save=false
+    - run: box docbox generate source=${{ inputs.source }} mappings:docbox=docbox  excludes=${{ inputs.excludes }} strategy-outputDir=${{ inputs.outputDir }} strategy-projectTitle=${{ inputs.projectTitle }}

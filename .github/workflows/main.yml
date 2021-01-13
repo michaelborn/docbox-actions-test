@@ -12,3 +12,5 @@ jobs:
       # this step runs the test.yml github action in the .github/actions dir
       - name: Run tests
         uses: ./.github/actions/test
+      - name: Generate docs
+        uses: ./.github/actions/docs
