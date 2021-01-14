@@ -26,7 +26,9 @@ jobs:
         run: box install
       
       - name: Start server
-        run: box server start cfengine=${{ matrix.cfengine }} --noSaveSettings
+        run: |
+          box set cfconfig_robustExceptionEnabled=true
+          box server start cfengine=${{ matrix.cfengine }} --noSaveSettings
 
       - name: Run TestBox Tests
         run: box testbox run
