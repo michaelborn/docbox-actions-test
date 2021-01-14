@@ -74,5 +74,6 @@ component extends="testbox.system.BaseSpec" {
 		}
 		directoryCreate( arguments.directory );
 	}
+
 }
 
