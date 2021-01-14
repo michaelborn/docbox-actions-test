@@ -30,10 +30,7 @@ component extends="testbox.system.BaseSpec" {
 		describe( "JSONAPIStrategy", function(){
 			beforeEach( function(){
 				// empty the directory so we know if it has been populated
-				if ( directoryExists( variables.testOutputDir ) ) {
-					directoryDelete( variables.testOutputDir, true );
-				}
-				directoryCreate( variables.testOutputDir );
+				resetTmpDirectory( expandPath( variables.testOutputDir ) );
 			} );
 
 			it( "can run without failure", function(){
@@ -123,5 +120,12 @@ component extends="testbox.system.BaseSpec" {
 		} );
 	}
 
+	function resetTmpDirectory( directory ){
+		// empty the directory so we know if it has been populated
+		if ( directoryExists( arguments.directory ) ) {
+			directoryDelete( arguments.directory, true );
+		}
+		directoryCreate( arguments.directory );
+	}
 }
 

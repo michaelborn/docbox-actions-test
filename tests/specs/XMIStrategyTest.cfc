@@ -3,12 +3,15 @@
  */
 component extends="testbox.system.BaseSpec" {
 
-	property name="testOutputFile" default="/tests/resources/tmp/uml/XMITestFile.uml";
+	property name="testOutputDirectory" default="/tests/resources/tmp/uml/";
+	property name="testOutputFile" default="XMITestFile.uml";
 
 	/*********************************** LIFE CYCLE Methods ***********************************/
 
 	// executes before all suites+specs in the run() method
 	function beforeAll(){
+		variables.testOutputFile = expandPath( variables.testOutputDirectory ) & variables.testOutputFile;
+
 		variables.docbox = new docbox.DocBox(
 			strategy   = "docbox.strategy.uml2tools.XMIStrategy",
 			properties = {
@@ -24,9 +27,8 @@ component extends="testbox.system.BaseSpec" {
 			fileDelete( variables.testOutputFile );
 		}
 
-		var testDir = getDirectoryFromPath( variables.testOutputFile );
-		if ( directoryExists( variables.testOutputFile ) ) {
-			directoryDelete( variables.testOutputFile );
+		if ( directoryExists( expandPath( variables.testOutputDirectory ) ) ) {
+			directoryDelete( expandPath( variables.testOutputDirectory ) );
 		}
 
 		structDelete( variables, "docbox" );
