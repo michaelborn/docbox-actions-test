@@ -10,7 +10,7 @@ component extends="testbox.system.BaseSpec" {
 	// executes before all suites+specs in the run() method
 	function beforeAll(){
 		variables.testOutputDir = expandPath( variables.testOutputDir );
-		variables.docbox = new docbox.DocBox(
+		variables.docbox        = new docbox.DocBox(
 			strategy   = "docbox.strategy.api.HTMLAPIStrategy",
 			properties = {
 				projectTitle : "DocBox Tests",
