@@ -3,7 +3,7 @@
  * <br>
  * <small><em>Copyright 2015 Ortus Solutions, Corp <a href="www.ortussolutions.com">www.ortussolutions.com</a></em></small>
  */
-component extends="docbox.strategy.AbstractTemplateStrategy" accessors="true"{
+component extends="docbox.strategy.AbstractTemplateStrategy" accessors="true" {
 
 	/**
 	 * The output directory
@@ -13,30 +13,36 @@ component extends="docbox.strategy.AbstractTemplateStrategy" accessors="true"{
 	/**
 	 * The project title to use
 	 */
-	property name="projectTitle" default="Untitled" type="string";
+	property
+		name   ="projectTitle"
+		default="Untitled"
+		type   ="string";
 
 	// Static variables.
-	variables.static.TEMPLATE_PATH	= "/docbox/strategy/json/resources/templates";
-	variables.static.ASSETS_PATH 	= "/docbox/strategy/json/resources/static";
+	variables.static.TEMPLATE_PATH = "/docbox/strategy/json/resources/templates";
+	variables.static.ASSETS_PATH   = "/docbox/strategy/json/resources/static";
 
 	/**
 	 * Constructor
-	 * 
+	 *
 	 * @outputDir The output directory
 	 * @projectTitle The title used in the HTML output
 	 */
-	component function init( required outputDir, string projectTitle="Untitled" ){
+	component function init(
+		required outputDir,
+		string projectTitle = "Untitled"
+	){
 		super.init();
 
-		variables.outputDir 	= arguments.outputDir;
-		variables.projectTitle 	= arguments.projectTitle;
+		variables.outputDir    = arguments.outputDir;
+		variables.projectTitle = arguments.projectTitle;
 
 		return this;
 	}
 
 	/**
 	 * Generate JSON documentation
-	 * 
+	 *
 	 * @metadata All component metadata, sourced from DocBox.
 	 */
 	component function run( required query metadata ){
@@ -46,19 +52,19 @@ component extends="docbox.strategy.AbstractTemplateStrategy" accessors="true"{
 			arguments.metadata.reduce( ( results, row ) => {
 				results.append( row );
 				return results;
-			}, [])
+			}, [] )
 		);
 
 		/**
 		 * Generate hierarchical JSON package indices with classes
 		 */
-		var packages = classes.reduce( function( results, class ) {
-			if ( !results.keyExists( class.package ) ){
+		var packages = classes.reduce( function( results, class ){
+			if ( !results.keyExists( class.package ) ) {
 				results[ class.package ] = [];
 			}
 			results[ class.package ].append( class );
 			return results;
-		}, {});
+		}, {} );
 
 		/**
 		 * Generate top-level JSON package index
@@ -74,15 +80,12 @@ component extends="docbox.strategy.AbstractTemplateStrategy" accessors="true"{
 		 */
 		packages.each( ( package, classes ) => {
 			var path = getOutputDir() & "/" & replace( package, ".", "/", "all" );
-			if ( !directoryExists( path ) ){
+			if ( !directoryExists( path ) ) {
 				directoryCreate( path );
 			}
 			classes.each( ( class ) => {
-				serializeToFile(
-					"#path#/#class.name#.json",
-					class
-				);
-			});
+				serializeToFile( "#path#/#class.name#.json", class );
+			} );
 
 			/**
 			 * Generate JSON package index for this package level
@@ -91,7 +94,7 @@ component extends="docbox.strategy.AbstractTemplateStrategy" accessors="true"{
 				path & "/package-summary.json",
 				buildPackageSummary( classes )
 			);
-		});
+		} );
 
 		return this;
 	}
@@ -102,15 +105,18 @@ component extends="docbox.strategy.AbstractTemplateStrategy" accessors="true"{
 	 * @classData Component metadata sourced from DocBox
 	 * @packages Array of packages for linking to package summary files
 	 */
-	package struct function buildOverviewSummary( required array classData, required struct packages ){
+	package struct function buildOverviewSummary(
+		required array classData,
+		required struct packages
+	){
 		return {
-			"classes" : buildPackageSummary( arguments.classData ).classes,
+			"classes"  : buildPackageSummary( arguments.classData ).classes,
 			"packages" : arguments.packages.map( ( package ) => {
 				return {
 					"name" : package,
-					"path" : "#replace( package , ".", "/", "all" )#/package-summary.json"
+					"path" : "#replace( package, ".", "/", "all" )#/package-summary.json"
 				}
-			}),
+			} ),
 			"title" : getProjectTitle()
 		};
 	}
@@ -125,9 +131,9 @@ component extends="docbox.strategy.AbstractTemplateStrategy" accessors="true"{
 			"classes" : arguments.classData.map( ( class ) => {
 				return {
 					"name" : class.name,
-					"path" : "#replace( class.package , ".", "/", "all" )#/#class.name#.json"
+					"path" : "#replace( class.package, ".", "/", "all" )#/#class.name#.json"
 				}
-			})
+			} )
 		};
 	}
 
@@ -137,34 +143,34 @@ component extends="docbox.strategy.AbstractTemplateStrategy" accessors="true"{
 	 * @classData Component metadata, courtesy of DocBox
 	 */
 	package array function normalizePackages( required array classData ){
-		return arguments.classData.map( function( row ) {
+		return arguments.classData.map( function( row ){
 			/**
 			 * Marshall functions to match the designed schema;
 			 */
-			if ( !isNull( row.metadata.functions ) ){
+			if ( !isNull( row.metadata.functions ) ) {
 				var metaFunctions = row.metadata.functions.map( ( method ) => {
 					return {
-						"returnType" : method.returnType,
+						"returnType"   : method.returnType,
 						"returnFormat" : method.returnFormat,
-						"parameters" : method.parameters,
-						"name" : method.name,
-						"hint" : method.keyExists( "hint" ) ? method.hint : "",
-						"description" : method.keyExists( "description" ) ? method.description : "",
-						"access" : method.access,
-						"position" : method.position
+						"parameters"   : method.parameters,
+						"name"         : method.name,
+						"hint"         : method.keyExists( "hint" ) ? method.hint : "",
+						"description"  : method.keyExists( "description" ) ? method.description : "",
+						"access"       : method.access,
+						"position"     : method.position
 					}
 				} );
 			}
 			return {
-				"name" : row.name,
-				"package" : row.package,
-				"type" : row.type,
-				"extends" : structKeyExists( row.metadata, "extends" ) ? row.extends : "",
+				"name"        : row.name,
+				"package"     : row.package,
+				"type"        : row.type,
+				"extends"     : structKeyExists( row.metadata, "extends" ) ? row.extends : "",
 				"fullextends" : structKeyExists( row.metadata, "fullextends" ) ? row.fullextends : "",
-				"hint" : structKeyExists( row.metadata, "hint" ) ? row.metadata.hint : "",
-				"functions" : structKeyExists( row.metadata, "functions" ) ? metaFunctions : []
+				"hint"        : structKeyExists( row.metadata, "hint" ) ? row.metadata.hint : "",
+				"functions"   : structKeyExists( row.metadata, "functions" ) ? metaFunctions : []
 			};
-		});
+		} );
 	}
 
 	/**
@@ -173,7 +179,14 @@ component extends="docbox.strategy.AbstractTemplateStrategy" accessors="true"{
 	 * @path Full path and filename of the file to create or overwrite.
 	 * @data Must be JSON-compatible... so either an array or a struct.
 	 */
-	package function serializeToFile( required string path, required any data ){
-        fileWrite( arguments.path, serializeJSON( arguments.data, true ) );
+	package function serializeToFile(
+		required string path,
+		required any data
+	){
+		fileWrite(
+			arguments.path,
+			serializeJSON( arguments.data, true )
+		);
 	}
+
 }
