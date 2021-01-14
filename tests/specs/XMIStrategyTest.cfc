@@ -4,7 +4,7 @@
 component extends="testbox.system.BaseSpec" {
 
 	property name="testOutputDirectory" default="/tests/resources/tmp/uml/";
-	property name="testOutputFile" default="XMITestFile.uml";
+	property name="testOutputFile"      default="XMITestFile.uml";
 
 	/*********************************** LIFE CYCLE Methods ***********************************/
 
