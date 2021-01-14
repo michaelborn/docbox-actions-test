@@ -21,12 +21,16 @@ component extends="testbox.system.BaseSpec" {
 	/*********************************** BDD SUITES ***********************************/
 
 	function run( testResults, testBox ){
+		variables.HTMLOutputDir = expandPath( variables.HTMLOutputDir );
+		variables.JSONOutputDir = expandPath( variables.JSONOutputDir );
+		variables.XMIOutputFile = expandPath( variables.XMIOutputFile );
+
 		// all your suites go here.
 		describe( "DocBox", function(){
 			beforeEach( function(){
-				resetTmpDirectory( expandPath( variables.HTMLOutputDir ) );
-				resetTmpDirectory( expandPath( variables.JSONOutputDir ) );
-				resetTmpDirectory( expandPath( getDirectoryFromPath( variables.XMIOutputFile ) ) );
+				resetTmpDirectory( variables.HTMLOutputDir );
+				resetTmpDirectory( variables.JSONOutputDir );
+				resetTmpDirectory( getDirectoryFromPath( variables.XMIOutputFile ) );
 
 				variables.docbox = new docbox.DocBox();
 			} );

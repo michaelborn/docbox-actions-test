@@ -9,6 +9,7 @@ component extends="testbox.system.BaseSpec" {
 
 	// executes before all suites+specs in the run() method
 	function beforeAll(){
+		variables.testOutputDir = expandPath( variables.testOutputDir );
 		variables.docbox = new docbox.DocBox(
 			strategy   = "docbox.strategy.json.JSONAPIStrategy",
 			properties = {
@@ -30,7 +31,7 @@ component extends="testbox.system.BaseSpec" {
 		describe( "JSONAPIStrategy", function(){
 			beforeEach( function(){
 				// empty the directory so we know if it has been populated
-				resetTmpDirectory( expandPath( variables.testOutputDir ) );
+				resetTmpDirectory( variables.testOutputDir );
 			} );
 
 			it( "can run without failure", function(){
