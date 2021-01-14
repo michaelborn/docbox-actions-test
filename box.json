@@ -3,6 +3,12 @@
     "version":"@build.version@+@build.number@",
     "author":"Ortus Solutions, Corp",
     "location":"http://downloads.ortussolutions.com/ortussolutions/docbox/@build.version@/docbox-@build.version@.zip",
+    "scripts":{
+        "generateAPIDocs":"touch .tmp && rm .tmp --recurse --force && docbox generate mapping=docbox excludes=tests|coldbox|testbox strategy-outputDir=.tmp/apidocs strategy-projectTitle=DocBox",
+        "commitAPIDocs":"run-script generateAPIDocs && !git add docs/apidocs/* && !git commit -m 'Updated API Docs'",
+        "format":"cfformat run DocBox.cfc,strategy/**/*.cfc,tests/specs/**/*.cfc --overwrite",
+        "format:check":"cfformat check DocBox.cfc,strategy/**/*.cfc,tests/specs/**/*.cfc --overwrite"
+    },
     "homepage":"https://www.ortussolutions.com",
     "documentation":"https://github.com/Ortus-Solutions/DocBox/wiki",
     "repository":{
