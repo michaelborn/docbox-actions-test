@@ -57,7 +57,7 @@ component accessors="true" {
 		any strategy      = "docbox.strategy.api.HTMLAPIStrategy",
 		struct properties = {}
 	){
-		var newStrategy;
+		var newStrategy = "";
 		// if instance?
 		if ( isObject( arguments.strategy ) ) {
 			newStrategy = arguments.strategy;
