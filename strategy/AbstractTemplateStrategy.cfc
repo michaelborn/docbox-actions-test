@@ -57,7 +57,7 @@ component doc_abstract="true" accessors="true"{
 		var tree = {};
 		for( var thisRow in qPackages ){
 			var node = tree;
-			var aPackage = listToArray( thisRow, "." );
+			var aPackage = listToArray( thisRow["package"], "." );
 
 			for( var thisPath in aPackage ){
 				if( not structKeyExists( node, thisPath ) ){

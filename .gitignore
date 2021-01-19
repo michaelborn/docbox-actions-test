@@ -1,11 +1,30 @@
-#ignore these files
-!.gitignore
+## OS and IDEs
+testbox
+.DS_Store
+.settings
 settings.xml
+.vscode
+.project
+WEB-INF
+
+# Dependencies
+coldbox/*
+testbox
+modules/*
+
+# Engines
+.engine/**
+.env
+
+# NPM Dependencies
+**/node_modules/*
+
+## Builds (DocBox-specific)
 *.iml
 tests/output/*
+tests/resources/tmp
 tests/node_modules
 build/build.number
 artifacts/*
 build-docbox/*
 tests/DocBox-APIDocs
-.vscode

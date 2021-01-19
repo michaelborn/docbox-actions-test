@@ -9,27 +9,72 @@ component accessors="true"{
 	/**
 	* The strategy to use for document generation. Must extend docbox.strategy.AbstractTemplateStrategy
 	*/
-	property name="strategy" doc_generic="docbox.strategy.AbstractTemplateStrategy";
+	property name="strategies" type="array" doc_generic="docbox.strategy.AbstractTemplateStrategy";
 
 	/**
 	* Constructor
-
-	* @strategy The optional strategy to generate the documentation with. This can be a class path or an instance of the strategy. If none is passed then
-	* we create the default strategy of 'docbox.strategy.api.HTMLAPIStrategy'
-	* @properties The struct of properties to instantiate the strategy with.
+	* 
+	* @strategy The documentation output strategy to utilize.
+	* @properties Struct of data properties required for the specific output strategy
+	* @return The DocBox instance
 	*/
 	DocBox function init(
-		any strategy ="docbox.strategy.api.HTMLAPIStrategy",
+		any strategy ="",
 		struct properties={}
 	){
+		variables.strategies = [];
+		if ( arguments.strategy != "" ){
+			addStrategy( 
+				strategy = arguments.strategy,
+				properties = arguments.properties
+			);
+		}
+		return this;
+	}
+
+	/**
+	 * Backwards-compatible setter to add a strategy to the docbox configuration.
+	 * 
+	 * @see addStrategy
+	 * @return The DocBox instance
+	 */
+	DocBox function setStrategy(){
+		return addStrategy( argumentCollection = arguments );
+	}
+
+	/**
+	 * Add a documentation strategy for output format.
+	 * 
+	 * @strategy The optional strategy to generate the documentation with. This can be a class path or an instance of the  strategy. If none is passed then
+	 * we create the default strategy of 'docbox.strategy.api.HTMLAPIStrategy'
+	 * @properties The struct of properties to instantiate the strategy with.
+	 * @return The DocBox instance
+	 */
+	DocBox function addStrategy( any strategy ="docbox.strategy.api.HTMLAPIStrategy", struct properties = {} ){
+		var newStrategy;
 		// if instance?
 		if( isObject( arguments.strategy ) ){
-			variables.strategy = arguments.strategy;
+			newStrategy = arguments.strategy;
 		} else {
-			// Create it
-			variables.strategy = new "#arguments.strategy#"( argumentCollection=arguments.properties );
+			switch( uCase( arguments.strategy ) ){
+				case "HTML":
+				case "HTMLAPISTRATEGY":
+					arguments.strategy = "docbox.strategy.api.HTMLAPIStrategy";
+				break;
+				case "JSON":
+				case "JSONAPISTRATEGY":
+					arguments.strategy = "docbox.strategy.json.JSONAPIStrategy";
+				break;
+				case "UML":
+				case "XMI":
+				case "XMISTRATEGY":
+					arguments.strategy = "docbox.strategy.uml2tools.XMIStrategy";
+				default:
+				break;
+			}
+			newStrategy = new "#arguments.strategy#"( argumentCollection=arguments.properties );
 		}
-
+		setStrategies( getStrategies().append( newStrategy ) );
 		return this;
 	}
 
@@ -48,12 +93,12 @@ component accessors="true"{
 		string mapping="",
 		string excludes=""
 	){
-		// verify we have a strategy
-		if( isNull( variables.strategy ) ){
+		// verify we have at least one strategy defined
+		if( isNull( getStrategies() ) || !getStrategies().len() ){
 			throw(
 				type 	= "StrategyNotSetException",
 				message = "No Template Strategy has been set.",
-				detail 	= "Create a Template Strategy, and set it with setStrategy() before calling generate() or pass it via the constructor."
+				detail 	= "Please call docbox.withStrategy( strategy, properties ) before running generate()."
 			);
 		}
 
@@ -66,10 +111,11 @@ component accessors="true"{
 		}
 
 		// build metadata collection
-		var qMetaData = buildMetaDataCollection( thisSource, arguments.excludes );
+		var metadata = buildMetaDataCollection( thisSource, arguments.excludes );
 
-		// run the strategy
-		variables.strategy.run( qMetaData );
+		getStrategies().each( function( strategy ) {
+			strategy.run( metadata );
+		});
 
 		return this;
 	}
@@ -78,6 +124,7 @@ component accessors="true"{
 
 	/**
 	* Clean input path
+	* 
 	* @path The incoming path to clean
 	* @inputDir The input dir to clean off
 	*/
@@ -90,11 +137,12 @@ component accessors="true"{
 
 	/**
 	* Builds the searchable meta data collection
+	* 
 	* @inputSource an array of structs containing inputDir and mapping
 	* @excludes	A regex that will be applied to the input source to exclude from the docs
 	*/
 	query function buildMetaDataCollection( required array inputSource, string excludes="" ){
-		var qMetaData = QueryNew( "package,name,extends,metadata,type,implements,fullextends,currentMapping" );
+		var metadata = QueryNew( "package,name,extends,metadata,type,implements,fullextends,currentMapping" );
 
 		// iterate over input sources
 		for( var thisInput in arguments.inputSource ){
@@ -138,33 +186,33 @@ component accessors="true"{
 	                }
 
 	                // Add row
-					QueryAddRow( qMetaData );
+					QueryAddRow( metadata );
 					// Add contents
-	                QuerySetCell( qMetaData, "package",  		packagePath );
-	                QuerySetCell( qMetaData, "name", 	 		cfcName );
-	                QuerySetCell( qMetaData, "metadata", 		meta );
-					QuerySetCell( qMetaData, "type", 	 		meta.type );
-					QuerySetCell( qMetaData, "currentMapping", 	thisInput.mapping );
+	                QuerySetCell( metadata, "package",  		packagePath );
+	                QuerySetCell( metadata, "name", 	 		cfcName );
+	                QuerySetCell( metadata, "metadata", 		meta );
+					QuerySetCell( metadata, "type", 	 		meta.type );
+					QuerySetCell( metadata, "currentMapping", 	thisInput.mapping );
 
 					// Get implements
 					var implements = getImplements( meta );
 					implements = listQualify( arrayToList( implements ), ':' );
-					QuerySetCell( qMetaData, "implements", implements );
+					QuerySetCell( metadata, "implements", implements );
 
 					// Get inheritance
 					var fullextends = getInheritance( meta );
 					fullextends = listQualify( arrayToList( fullextends ), ':' );
-					QuerySetCell( qMetaData, "fullextends", fullextends );
+					QuerySetCell( metadata, "fullextends", fullextends );
 
 	                //so we cane easily query direct desendents
 	                if( StructKeyExists( meta, "extends" ) ){
 						if( meta.type eq "interface" ){
-							QuerySetCell( qMetaData, "extends", meta.extends[ structKeyList( meta.extends ) ].name );
+							QuerySetCell( metadata, "extends", meta.extends[ structKeyList( meta.extends ) ].name );
 						} else						{
-		                    QuerySetCell( qMetaData, "extends", meta.extends.name );
+		                    QuerySetCell( metadata, "extends", meta.extends.name );
 						}
 	                } else {
-	                    QuerySetCell( qMetaData, "extends", "-" );
+	                    QuerySetCell( metadata, "extends", "-" );
 	                }
 
 				}
@@ -185,12 +233,14 @@ component accessors="true"{
 			} // end qFiles iteration
 		} // end input source iteration
 
-		return qMetadata;
+		return metadata;
 	}
 
 	/**
 	* Gets an array of the classes that this metadata implements, in order of extension
+	* 
 	* @metadata The metadata to look at
+	* @return array of component interfaces implemented by some component in this package
 	*/
 	private array function getImplements( required struct metadata ){
 		var interfaces = {};
@@ -218,7 +268,9 @@ component accessors="true"{
 
 	/**
 	* Gets an array of the classes that this metadata extends, in order of extension
+	* 
 	* @metadata The metadata to look at
+	* @return array of classes inherited by some component in this package
 	*/
 	private array function getInheritance( required struct metadata ){
 		//ignore top level
