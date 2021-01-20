@@ -7,28 +7,19 @@ component extends="testbox.system.BaseSpec" {
 
 	/*********************************** LIFE CYCLE Methods ***********************************/
 
-	// executes before all suites+specs in the run() method
-	function beforeAll(){
-		variables.docbox = new docbox.DocBox(
-			strategy   = "docbox.strategy.api.HTMLAPIStrategy",
-			properties = {
-				projectTitle : "DocBox Tests",
-				outputDir    : variables.testOutputDir
-			}
-		);
-	}
-
-	// executes after all suites+specs in the run() method
-	function afterAll(){
-		structDelete( variables, "docbox" );
-	}
-
 	/*********************************** BDD SUITES ***********************************/
 
 	function run(){
 		// all your suites go here.
 		describe( "HTMLAPIStrategy", function(){
 			beforeEach( function(){
+				variables.docbox = new docbox.DocBox(
+					strategy   = "docbox.strategy.api.HTMLAPIStrategy",
+					properties = {
+						projectTitle : "DocBox Tests",
+						outputDir    : variables.testOutputDir
+					}
+				);
 				// empty the directory so we know if it has been populated
 				if ( directoryExists( variables.testOutputDir ) ) {
 					directoryDelete( variables.testOutputDir, true );

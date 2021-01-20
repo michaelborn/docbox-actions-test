@@ -7,17 +7,6 @@ component extends="testbox.system.BaseSpec" {
 
 	/*********************************** LIFE CYCLE Methods ***********************************/
 
-	// executes before all suites+specs in the run() method
-	function beforeAll(){
-		variables.docbox = new docbox.DocBox(
-			strategy   = "docbox.strategy.uml2tools.XMIStrategy",
-			properties = {
-				projectTitle : "DocBox Tests",
-				outputFile   : variables.testOutputFile
-			}
-		);
-	}
-
 	// executes after all suites+specs in the run() method
 	function afterAll(){
 		if ( fileExists( variables.testOutputFile ) ) {
@@ -28,8 +17,6 @@ component extends="testbox.system.BaseSpec" {
 		if ( directoryExists( variables.testOutputFile ) ) {
 			directoryDelete( variables.testOutputFile );
 		}
-
-		structDelete( variables, "docbox" );
 	}
 
 	/*********************************** BDD SUITES ***********************************/
@@ -38,6 +25,14 @@ component extends="testbox.system.BaseSpec" {
 		// all your suites go here.
 		describe( "XMLStrategy", function(){
 			beforeEach( function(){
+				variables.docbox = new docbox.DocBox(
+					strategy   = "docbox.strategy.uml2tools.XMIStrategy",
+					properties = {
+						projectTitle : "DocBox Tests",
+						outputFile   : variables.testOutputFile
+					}
+				);
+
 				// delete the test file so we know if it has been created during test runs
 				if ( fileExists( variables.testOutputFile ) ) {
 					fileDelete( variables.testOutputFile );
