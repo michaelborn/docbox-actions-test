@@ -11,7 +11,7 @@
 
 <!--- Code Coverage requires FusionReactor --->
 <cfparam name="url.coverageEnabled"					default="true">
-<cfparam name="url.coveragePathToCapture"			default="#expandPath( '/root' )#">
+<cfparam name="url.coveragePathToCapture"			default="#expandPath( '/docbox' )#">
 <cfparam name="url.coverageWhitelist"				default="">
 <cfparam name="url.coverageBlacklist"				default="/testbox,/coldbox,/tests,/modules,Application.cfc,/index.cfm">
 <!---<cfparam name="url.coverageBrowserOutputDir"		default="#expandPath( '/tests/results/coverageReport' )#">--->

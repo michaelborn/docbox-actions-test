@@ -27,7 +27,7 @@ component accessors="true" {
 		struct properties = {}
 	){
 		variables.strategies = [];
-		if ( arguments.strategy != "" ) {
+		if ( len( arguments.strategy ) ) {
 			addStrategy(
 				strategy   = arguments.strategy,
 				properties = arguments.properties
@@ -58,11 +58,12 @@ component accessors="true" {
 		any strategy      = "docbox.strategy.api.HTMLAPIStrategy",
 		struct properties = {}
 	){
-		var newStrategy;
-		// if instance?
-		if ( isObject( arguments.strategy ) ) {
-			newStrategy = arguments.strategy;
-		} else {
+		// Set the incomign strategy to store
+		var newStrategy = arguments.strategy;
+
+		// If the strategy is not an object, then look it up
+		if ( isSimpleValue( newStrategy ) ) {
+			// Discover the strategy
 			switch ( uCase( arguments.strategy ) ) {
 				case "HTML":
 				case "HTMLAPISTRATEGY":
@@ -79,6 +80,7 @@ component accessors="true" {
 				default:
 					break;
 			}
+			// Build it out
 			newStrategy = new "#arguments.strategy#"( argumentCollection = arguments.properties );
 		}
 		setStrategies( getStrategies().append( newStrategy ) );
