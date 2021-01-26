@@ -33,7 +33,8 @@
     "ignore":[
         "**/.*",
         "tests/**",
-        ".git*"
+        ".git*",
+        "coldbox-5-router-documentation.png"
     ],
     "scripts":{
         "format":"cfformat run DocBox.cfc,strategy,tests",
