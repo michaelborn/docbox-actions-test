@@ -6,12 +6,12 @@
 component doc_abstract="true" accessors="true" {
 
 	/**
-	 * The function query cache
+	 * The function query cache map
 	 */
 	property name="functionQueryCache" type="struct";
 
 	/**
-	 * The property query cache
+	 * The property query cache map
 	 */
 	property name="propertyQueryCache" type="struct";
 
@@ -452,6 +452,41 @@ component doc_abstract="true" accessors="true" {
 		fileWrite( arguments.path, local.html );
 
 		return this;
+	}
+
+	// Recursive function to output data
+	function writeItems( struct startingLevel ){
+		for ( var item in startingLevel ) {
+			// Skip this key as it isn't a class, just the link for the package.
+			if ( item == "$link" ) {
+				continue;
+			}
+			var itemValue = startingLevel[ item ];
+
+			//  If this is a class, output it
+			if ( structKeyExists( itemValue, "$class" ) ) {
+				writeOutput(
+					"<li data-jstree='{ ""type"" : ""#itemValue.$class.type#"" }' linkhref=""#itemValue.$class.link#"" searchlist=""#itemValue.$class.searchList#"" thissort=""2"">"
+				);
+				writeOutput( item );
+				writeOutput( "</li>" );
+				// If this is a package, output it and its children
+			} else {
+				var link = "";
+				if ( structKeyExists( itemValue, "$link" ) ) {
+					link = itemValue.$link;
+				}
+				writeOutput(
+					"<li data-jstree='{ ""type"" : ""package"" }' linkhref=""#link#"" searchlist=""#item#"" thissort=""1"">"
+				);
+				writeOutput( item );
+				writeOutput( "<ul>" );
+				// Recursive call
+				writeItems( itemValue );
+				writeOutput( "</ul>" );
+				writeOutput( "</li>" );
+			}
+		}
 	}
 
 	/**

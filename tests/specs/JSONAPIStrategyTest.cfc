@@ -3,26 +3,9 @@
  */
 component extends="testbox.system.BaseSpec" {
 
-	property name="testOutputDir" default="/tests/resources/tmp/json";
+	variables.testOutputDir = expandPath( "/tests/tmp/json" );
 
 	/*********************************** LIFE CYCLE Methods ***********************************/
-
-	// executes before all suites+specs in the run() method
-	function beforeAll(){
-		variables.testOutputDir = expandPath( variables.testOutputDir );
-		variables.docbox = new docbox.DocBox(
-			strategy   = "docbox.strategy.json.JSONAPIStrategy",
-			properties = {
-				projectTitle : "DocBox Tests",
-				outputDir    : variables.testOutputDir
-			}
-		);
-	}
-
-	// executes after all suites+specs in the run() method
-	function afterAll(){
-		structDelete( variables, "docbox" );
-	}
 
 	/*********************************** BDD SUITES ***********************************/
 
@@ -30,8 +13,18 @@ component extends="testbox.system.BaseSpec" {
 		// all your suites go here.
 		describe( "JSONAPIStrategy", function(){
 			beforeEach( function(){
+				variables.docbox = new docbox.DocBox(
+					strategy   = "docbox.strategy.json.JSONAPIStrategy",
+					properties = {
+						projectTitle : "DocBox Tests",
+						outputDir    : variables.testOutputDir
+					}
+				);
 				// empty the directory so we know if it has been populated
-				resetTmpDirectory( variables.testOutputDir );
+				if ( directoryExists( variables.testOutputDir ) ) {
+					directoryDelete( variables.testOutputDir, true );
+				}
+				directoryCreate( variables.testOutputDir );
 			} );
 
 			it( "can run without failure", function(){
@@ -40,7 +33,7 @@ component extends="testbox.system.BaseSpec" {
 						source   = expandPath( "/tests" ),
 						mapping  = "tests",
 						excludes = "(coldbox|build\-docbox)"
-					)
+					);
 				} ).notToThrow();
 			} );
 
@@ -63,7 +56,7 @@ component extends="testbox.system.BaseSpec" {
 				);
 				expect( arrayContainsNoCase( results, "JSONAPIStrategyTest.json" ) ).toBeTrue(
 					"should generate JSONAPIStrategyTest.json to document JSONAPIStrategyTest.cfc"
-				)
+				);
 			} );
 
 			it( "Produces the correct hierarchy of class documentation files", function(){
@@ -107,7 +100,7 @@ component extends="testbox.system.BaseSpec" {
 					0,
 					"should have a few documented packages"
 				);
-				packageSummary.classes.each( ( class ) => {
+				packageSummary.classes.each( function( class ){
 					expect( class )
 						.toBeTypeOf( "struct" )
 						.toHaveKey( "path" )
@@ -119,14 +112,6 @@ component extends="testbox.system.BaseSpec" {
 				} );
 			} );
 		} );
-	}
-
-	function resetTmpDirectory( directory ){
-		// empty the directory so we know if it has been populated
-		if ( directoryExists( arguments.directory ) ) {
-			directoryDelete( arguments.directory, true );
-		}
-		directoryCreate( arguments.directory );
 	}
 
 }

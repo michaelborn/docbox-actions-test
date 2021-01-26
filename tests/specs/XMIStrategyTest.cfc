@@ -3,23 +3,9 @@
  */
 component extends="testbox.system.BaseSpec" {
 
-	property name="testOutputDirectory" default="/tests/resources/tmp/uml/";
-	property name="testOutputFile"      default="XMITestFile.uml";
+	variables.testOutputFile = expandPath( "/tests/tmp/XMITestFile.uml" );
 
 	/*********************************** LIFE CYCLE Methods ***********************************/
-
-	// executes before all suites+specs in the run() method
-	function beforeAll(){
-		variables.testOutputFile = expandPath( variables.testOutputDirectory ) & variables.testOutputFile;
-
-		variables.docbox = new docbox.DocBox(
-			strategy   = "docbox.strategy.uml2tools.XMIStrategy",
-			properties = {
-				projectTitle : "DocBox Tests",
-				outputFile   : variables.testOutputFile
-			}
-		);
-	}
 
 	// executes after all suites+specs in the run() method
 	function afterAll(){
@@ -27,11 +13,10 @@ component extends="testbox.system.BaseSpec" {
 			fileDelete( variables.testOutputFile );
 		}
 
-		if ( directoryExists( expandPath( variables.testOutputDirectory ) ) ) {
-			directoryDelete( expandPath( variables.testOutputDirectory ) );
+		var testDir = getDirectoryFromPath( variables.testOutputFile );
+		if ( directoryExists( variables.testOutputFile ) ) {
+			directoryDelete( variables.testOutputFile );
 		}
-
-		structDelete( variables, "docbox" );
 	}
 
 	/*********************************** BDD SUITES ***********************************/
@@ -40,6 +25,14 @@ component extends="testbox.system.BaseSpec" {
 		// all your suites go here.
 		describe( "XMLStrategy", function(){
 			beforeEach( function(){
+				variables.docbox = new docbox.DocBox(
+					strategy   = "docbox.strategy.uml2tools.XMIStrategy",
+					properties = {
+						projectTitle : "DocBox Tests",
+						outputFile   : variables.testOutputFile
+					}
+				);
+
 				// delete the test file so we know if it has been created during test runs
 				if ( fileExists( variables.testOutputFile ) ) {
 					fileDelete( variables.testOutputFile );
@@ -52,7 +45,7 @@ component extends="testbox.system.BaseSpec" {
 						source   = expandPath( "/tests" ),
 						mapping  = "tests",
 						excludes = "(coldbox|build\-docbox)"
-					)
+					);
 				} ).notToThrow();
 			} );
 

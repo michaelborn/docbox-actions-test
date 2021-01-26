@@ -3,20 +3,11 @@
  */
 component extends="testbox.system.BaseSpec" {
 
-	property name="HTMLOutputDir" default="/tests/resources/tmp/html";
-	property name="JSONOutputDir" default="/tests/resources/tmp/json";
-	property name="XMIOutputFile" default="/tests/resources/tmp/uml/XMITestFile.uml";
+	variables.HTMLOutputDir = expandPath( "/tests/tmp/html" );
+	variables.JSONOutputDir = expandPath( "/tests/tmp/json" );
+	variables.XMIOutputFile = expandPath( "/tests/tmp/XMITestFile.uml" );
 
 	/*********************************** LIFE CYCLE Methods ***********************************/
-
-	// executes before all suites+specs in the run() method
-	function beforeAll(){
-	}
-
-	// executes after all suites+specs in the run() method
-	function afterAll(){
-		structDelete( variables, "docbox" );
-	}
 
 	/*********************************** BDD SUITES ***********************************/
 

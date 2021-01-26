@@ -3,26 +3,9 @@
  */
 component extends="testbox.system.BaseSpec" {
 
-	property name="testOutputDir" default="/tests/resources/tmp/html";
+	variables.testOutputDir = expandPath( "/tests/tmp/html" );
 
 	/*********************************** LIFE CYCLE Methods ***********************************/
-
-	// executes before all suites+specs in the run() method
-	function beforeAll(){
-		variables.testOutputDir = expandPath( variables.testOutputDir );
-		variables.docbox = new docbox.DocBox(
-			strategy   = "docbox.strategy.api.HTMLAPIStrategy",
-			properties = {
-				projectTitle : "DocBox Tests",
-				outputDir    : variables.testOutputDir
-			}
-		);
-	}
-
-	// executes after all suites+specs in the run() method
-	function afterAll(){
-		structDelete( variables, "docbox" );
-	}
 
 	/*********************************** BDD SUITES ***********************************/
 
@@ -30,8 +13,18 @@ component extends="testbox.system.BaseSpec" {
 		// all your suites go here.
 		describe( "HTMLAPIStrategy", function(){
 			beforeEach( function(){
+				variables.docbox = new docbox.DocBox(
+					strategy   = "docbox.strategy.api.HTMLAPIStrategy",
+					properties = {
+						projectTitle : "DocBox Tests",
+						outputDir    : variables.testOutputDir
+					}
+				);
 				// empty the directory so we know if it has been populated
-				resetTmpDirectory( variables.testOutputDir );
+				if ( directoryExists( variables.testOutputDir ) ) {
+					directoryDelete( variables.testOutputDir, true );
+				}
+				directoryCreate( variables.testOutputDir );
 			} );
 
 			it( "can run without failure", function(){
@@ -63,17 +56,9 @@ component extends="testbox.system.BaseSpec" {
 				var testFile = variables.testOutputDir & "/tests/specs/HTMLAPIStrategyTest.html";
 				expect( fileExists( testFile ) ).toBeTrue(
 					"should generate #testFile# to document HTMLAPIStrategyTest.cfc"
-				)
+				);
 			} );
 		} );
-	}
-
-	function resetTmpDirectory( directory ){
-		// empty the directory so we know if it has been populated
-		if ( directoryExists( arguments.directory ) ) {
-			directoryDelete( arguments.directory, true );
-		}
-		directoryCreate( arguments.directory );
 	}
 
 }

@@ -49,7 +49,7 @@ component extends="docbox.strategy.AbstractTemplateStrategy" accessors="true" {
 		ensureDirectory( getOutputDir() );
 
 		var classes = normalizePackages(
-			arguments.metadata.reduce( ( results, row ) => {
+			arguments.metadata.reduce( function( results, row ){
 				results.append( row );
 				return results;
 			}, [] )
@@ -78,12 +78,12 @@ component extends="docbox.strategy.AbstractTemplateStrategy" accessors="true" {
 		 * Output a hierarchical folder structure which matches the original package structure -
 		 * Including an index.json file for each package level.
 		 */
-		packages.each( ( package, classes ) => {
+		packages.each( function( package, classes ){
 			var path = getOutputDir() & "/" & replace( package, ".", "/", "all" );
 			if ( !directoryExists( path ) ) {
 				directoryCreate( path );
 			}
-			classes.each( ( class ) => {
+			classes.each( function( class ){
 				serializeToFile( "#path#/#class.name#.json", class );
 			} );
 
@@ -111,11 +111,11 @@ component extends="docbox.strategy.AbstractTemplateStrategy" accessors="true" {
 	){
 		return {
 			"classes"  : buildPackageSummary( arguments.classData ).classes,
-			"packages" : arguments.packages.map( ( package ) => {
+			"packages" : arguments.packages.map( function( package ){
 				return {
 					"name" : package,
 					"path" : "#replace( package, ".", "/", "all" )#/package-summary.json"
-				}
+				};
 			} ),
 			"title" : getProjectTitle()
 		};
@@ -128,11 +128,11 @@ component extends="docbox.strategy.AbstractTemplateStrategy" accessors="true" {
 	 */
 	package struct function buildPackageSummary( required array classData ){
 		return {
-			"classes" : arguments.classData.map( ( class ) => {
+			"classes" : arguments.classData.map( function( class ){
 				return {
 					"name" : class.name,
 					"path" : "#replace( class.package, ".", "/", "all" )#/#class.name#.json"
-				}
+				};
 			} )
 		};
 	}
@@ -147,28 +147,34 @@ component extends="docbox.strategy.AbstractTemplateStrategy" accessors="true" {
 			/**
 			 * Marshall functions to match the designed schema;
 			 */
-			if ( !isNull( row.metadata.functions ) ) {
-				var metaFunctions = row.metadata.functions.map( ( method ) => {
+			if ( !isNull( arguments.row.metadata.functions ) ) {
+				var metaFunctions = arrayMap( arguments.row.metadata.functions, function( method ){
 					return {
-						"returnType"   : method.returnType,
-						"returnFormat" : method.returnFormat,
-						"parameters"   : method.parameters,
-						"name"         : method.name,
-						"hint"         : method.keyExists( "hint" ) ? method.hint : "",
-						"description"  : method.keyExists( "description" ) ? method.description : "",
-						"access"       : method.access,
-						"position"     : method.position
-					}
+						"returnType"   : arguments.method.returnType,
+						"returnFormat" : isNull( arguments.method.returnFormat ) ? "plain" : arguments.method.returnFormat,
+						"parameters"   : arguments.method.parameters,
+						"name"         : arguments.method.name,
+						"hint"         : arguments.method.keyExists( "hint" ) ? arguments.method.hint : "",
+						"description"  : arguments.method.keyExists( "description" ) ? arguments.method.description : "",
+						"access"       : arguments.method.access,
+						"position"     : arguments.method.keyExists( "position" ) ? arguments.method.position : {
+							"start" : 0,
+							"end"   : 0
+						}
+					};
 				} );
 			}
 			return {
-				"name"        : row.name,
-				"package"     : row.package,
-				"type"        : row.type,
-				"extends"     : structKeyExists( row.metadata, "extends" ) ? row.extends : "",
-				"fullextends" : structKeyExists( row.metadata, "fullextends" ) ? row.fullextends : "",
-				"hint"        : structKeyExists( row.metadata, "hint" ) ? row.metadata.hint : "",
-				"functions"   : structKeyExists( row.metadata, "functions" ) ? metaFunctions : []
+				"name"        : arguments.row.name,
+				"package"     : arguments.row.package,
+				"type"        : arguments.row.type,
+				"extends"     : structKeyExists( arguments.row.metadata, "extends" ) ? arguments.row.extends : "",
+				"fullextends" : structKeyExists(
+					arguments.row.metadata,
+					"fullextends"
+				) ? arguments.row.fullextends : "",
+				"hint"      : structKeyExists( arguments.row.metadata, "hint" ) ? arguments.row.metadata.hint : "",
+				"functions" : structKeyExists( arguments.row.metadata, "functions" ) ? metaFunctions : []
 			};
 		} );
 	}
