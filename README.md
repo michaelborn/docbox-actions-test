@@ -1,4 +1,4 @@
-[![All Contributors](https://img.shields.io/github/contributors/Ortus-Solutions/DocBox?style=flat-square)](#contributors)
+[![All Contributors](https://img.shields.io/github/contributors/Ortus-Solutions/DocBox?style=flat-square)](https://github.com/michaelborn/DocBox/graphs/contributors)
 |
 [![Master Branch Build Status](https://img.shields.io/travis/Ortus-Solutions/DocBox/master.svg?style=flat-square&label=master)](https://travis-ci.org/Ortus-Solutions/DocBox) 
 | 
