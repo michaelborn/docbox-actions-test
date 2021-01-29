@@ -34,7 +34,7 @@ DocBox is a JavaDoc-style documentation generator for your CFML codebase based o
 ## SYSTEM REQUIREMENTS
 
 - Lucee 5+
-- ColdFusion 2016+
+- Adobe ColdFusion 2016+
 
 ## Usage
 
