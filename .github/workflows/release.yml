@@ -58,7 +58,7 @@ jobs:
       - name: Run Semantic Release
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        run: box semantic-release
+        run: box semantic-release --dry-run --verbose
 
       - name: Generate API Docs
         run: |
