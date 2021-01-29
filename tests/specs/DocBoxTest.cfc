@@ -12,6 +12,10 @@ component extends="testbox.system.BaseSpec" {
 	/*********************************** BDD SUITES ***********************************/
 
 	function run( testResults, testBox ){
+		variables.HTMLOutputDir = expandPath( variables.HTMLOutputDir );
+		variables.JSONOutputDir = expandPath( variables.JSONOutputDir );
+		variables.XMIOutputFile = expandPath( variables.XMIOutputFile );
+
 		// all your suites go here.
 		describe( "DocBox", function(){
 			beforeEach( function(){

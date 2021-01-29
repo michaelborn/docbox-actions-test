@@ -7,7 +7,6 @@ component extends="testbox.system.BaseSpec" {
 
 	/*********************************** LIFE CYCLE Methods ***********************************/
 
-
 	/*********************************** BDD SUITES ***********************************/
 
 	function run(){
