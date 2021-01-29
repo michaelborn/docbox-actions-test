@@ -7,18 +7,6 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ----
 
-## 3.0.0
-
-### Added
-
-* JSON output strategy for machine-readable documentation output
-* Multiple strategy support - generate documentation in multiple formats simultaneously
-* Can configure strategy via "alias" instead of full class path
-
-### Fixed
-
-* XMI output strategy threw error on building package tree
-
 ## 2.2.1
 
 ### Fixed
