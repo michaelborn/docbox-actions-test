@@ -37,9 +37,9 @@
         "coldbox-5-router-documentation.png"
     ],
     "scripts":{
-        "format":"cfformat run --overwrite DocBox.cfc,strategy,tests",
-        "format:watch":"cfformat watch --overwrite DocBox.cfc,strategy,tests ./.cfformat.json",
-        "format:check":"cfformat check --overwrite DocBox.cfc,strategy,tests",
+        "format":"cfformat run --overwrite DocBox.cfc,strategy,tests/specs",
+        "format:watch":"cfformat watch --overwrite DocBox.cfc,strategy,tests/specs ./.cfformat.json",
+        "format:check":"cfformat check --overwrite DocBox.cfc,strategy,tests/specs",
         "generateAPIDocs":"touch .tmp && rm .tmp --recurse --force && docbox generate mapping=docbox excludes=tests|coldbox|testbox strategy-outputDir=.tmp/apidocs strategy-projectTitle=DocBox",
         "commitAPIDocs":"run-script generateAPIDocs && !git add docs/apidocs/* && !git commit -m 'Updated API Docs'"
     },

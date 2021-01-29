@@ -8,7 +8,6 @@ settings.xml
 WEB-INF
 
 # Dependencies
-coldbox/*
 testbox
 modules/*
 
