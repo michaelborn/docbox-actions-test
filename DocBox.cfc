@@ -98,9 +98,9 @@ component accessors="true" {
 	 * @return The DocBox instance
 	 */
 	DocBox function generate(
-		required source,
-		string mapping  = "",
-		string excludes = ""
+		required string source,
+		required string mapping,
+		required string excludes
 	){
 		// verify we have at least one strategy defined
 		if ( isNull( getStrategies() ) || !getStrategies().len() ) {
